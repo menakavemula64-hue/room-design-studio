@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Studio</title>
+  <style>
+    :root {
+      --ink: #24332e;
+      --muted: #68746e;
+      --paper: #f6f5f0;
+      --panel: #ffffff;
+      --line: #e3e5de;
+      --green: #315c4b;
+      --accent: #c77b5a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    header {
+      height: 72px;
+      padding: 0 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    .save-button,
+    .create-button {
+      border: 0;
+      border-radius: 6px;
+      padding: 12px 18px;
+      color: white;
+      background: var(--green);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    main {
+      width: min(1180px, 90%);
+      margin: 48px auto;
+    }
+
+    .intro {
+      margin-bottom: 28px;
+    }
+
+    .intro p {
+      margin: 0 0 8px;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 38px;
+      font-weight: 500;
+    }
+
+    .studio {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .controls,
+    .preview {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .controls {
+      padding: 24px;
+    }
+
+    .group {
+      margin-bottom: 24px;
+    }
+
+    .group h2 {
+      margin: 0 0 12px;
+      font-size: 15px;
+    }
+
+    .room-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .option,
+    .style-option {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--ink);
+      background: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .option.selected,
+    .style-option.selected {
+      border-color: var(--green);
+      background: #edf3ef;
+    }
+
+    .styles {
+      display: grid;
+      gap: 8px;
+    }
+
+    .style-option {
+      text-align: left;
+    }
+
+    .upload-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .upload-group input {
+      width: 100%;
+      max-width: 100%;
+      font: inherit;
+      font-size: 12px;
+    }
+
+    .upload-group p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .text-button {
+      margin-top: 8px;
+      padding: 0;
+      border: 0;
+      color: var(--green);
+      background: transparent;
+      font: inherit;
+      font-size: 13px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .swatches {
+      display: flex;
+      gap: 10px;
+    }
+
+    .swatch {
+      width: 32px;
+      height: 32px;
+      border: 2px solid white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--line);
+      cursor: pointer;
+    }
+
+    .swatch.selected {
+      box-shadow: 0 0 0 2px var(--green);
+    }
+
+    .create-button {
+      width: 100%;
+    }
+
+    .preview {
+      overflow: hidden;
+    }
+
+    .room-image {
+      position: relative;
+      isolation: isolate;
+      min-height: 440px;
+      display: flex;
+      align-items: end;
+      padding: 24px;
+      --room-photo: url("https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1500&q=85");
+      --accent-color: #c77b5a;
+      --style-filter: sepia(.12) saturate(.9);
+    }
+
+    .room-image::before {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      content: "";
+      background-image:
+        linear-gradient(0deg, rgba(20, 30, 25, .55), transparent 55%),
+        linear-gradient(0deg, color-mix(in srgb, var(--accent-color) 12%, transparent), color-mix(in srgb, var(--accent-color) 12%, transparent)),
+        var(--room-photo);
+      background-position: center 55%;
+      background-size: cover;
+      filter: var(--style-filter);
+      transition: filter .25s ease;
+    }
+
+    .room-image::after {
+      position: absolute;
+      z-index: 2;
+      inset: auto 0 0;
+      height: 8px;
+      content: "";
+      background: var(--accent-color);
+    }
+
+    .image-label {
+      position: relative;
+      z-index: 1;
+      color: white;
+    }
+
+    .image-label p {
+      margin: 0 0 5px;
+      font-size: 14px;
+    }
+
+    .image-label h2 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: 500;
+    }
+
+    .preview-footer {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    #message {
+      min-height: 20px;
+      margin: 12px 0 0;
+      color: var(--green);
+      font-size: 14px;
+    }
+
+    @media (max-width: 720px) {
+      main {
+        margin: 30px auto;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .studio {
+        grid-template-columns: 1fr;
+      }
+
+      .room-image {
+        min-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">room<span>.</span>studio</div>
+    <button class="save-button" id="saveButton">Save room</button>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p>Your space, your way</p>
+      <h1>Design a room you love</h1>
+    </section>
+
+    <section class="studio">
+      <aside class="controls">
+        <div class="group">
+          <h2>1. Choose a room</h2>
+          <div class="room-options">
+            <button class="option selected">Living room</button>
+            <button class="option">Bedroom</button>
+            <button class="option">Kitchen</button>
+            <button class="option">Office</button>
+          </div>
+        </div>
+
+        <div class="group upload-group">
+          <label for="photoUpload">Or upload your room photo</label>
+          <input id="photoUpload" type="file" accept="image/*">
+          <p id="uploadName" role="status"></p>
+          <button class="text-button" id="useSamplePhoto" type="button" hidden>Use sample room photo</button>
+        </div>
+
+        <div class="group">
+          <h2>2. Choose a style</h2>
+          <div class="styles">
+            <button class="style-option selected">Warm minimal</button>
+            <button class="style-option">Modern</button>
+            <button class="style-option">Scandinavian</button>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2>3. Pick an accent color</h2>
+          <div class="swatches">
+            <button class="swatch selected" aria-label="Terracotta" data-color="#c77b5a" style="background:#c77b5a"></button>
+            <button class="swatch" aria-label="Forest green" data-color="#54745b" style="background:#54745b"></button>
+            <button class="swatch" aria-label="Deep blue" data-color="#54728a" style="background:#54728a"></button>
+            <button class="swatch" aria-label="Golden yellow" data-color="#d1a345" style="background:#d1a345"></button>
+          </div>
+        </div>
+
+        <button class="create-button" id="createButton">Create my concept</button>
+        <p id="message" role="status"></p>
+      </aside>
+
+      <section class="preview" aria-label="Room preview">
+        <div class="room-image">
+          <div class="image-label">
+            <p id="previewStyle">Warm minimal living room</p>
+            <h2>Your room preview</h2>
+          </div>
+        </div>
+        <div class="preview-footer">
+          <span>Room concept</span>
+          <span id="previewRoom">Living room</span>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const roomButtons = document.querySelectorAll(".option");
+    const styleButtons = document.querySelectorAll(".style-option");
+    const swatches = document.querySelectorAll(".swatch");
+    const photoUpload = document.querySelector("#photoUpload");
+    const uploadName = document.querySelector("#uploadName");
+    const useSamplePhoto = document.querySelector("#useSamplePhoto");
+    const previewImage = document.querySelector(".room-image");
+    const previewRoom = document.querySelector("#previewRoom");
+    const previewStyle = document.querySelector("#previewStyle");
+    const message = document.querySelector("#message");
+    const roomImages = {
+      "Living room": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1500&q=85",
+      Bedroom: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1500&q=85",
+      Kitchen: "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1500&q=85",
+      Office: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1500&q=85"
+    };
+    const styleFilters = {
+      "Warm minimal": "sepia(.12) saturate(.9)",
+      Modern: "saturate(.72) contrast(1.12)",
+      Scandinavian: "saturate(.65) brightness(1.1)"
+    };
+    let uploadedPhotoUrl = null;
+
+    roomButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        roomButtons.forEach((item) => item.classList.remove("selected"));
+        button.classList.add("selected");
+        previewRoom.textContent = button.textContent;
+        updatePreview();
+      });
+    });
+
+    styleButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        styleButtons.forEach((item) => item.classList.remove("selected"));
+        button.classList.add("selected");
+        updatePreview();
+      });
+    });
+
+    swatches.forEach((swatch) => {
+      swatch.addEventListener("click", () => {
+        swatches.forEach((item) => item.classList.remove("selected"));
+        swatch.classList.add("selected");
+        updatePreview();
+      });
+    });
+
+    photoUpload.addEventListener("change", () => {
+      const file = photoUpload.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        uploadName.textContent = "Please choose an image file.";
+        photoUpload.value = "";
+        return;
+      }
+
+      if (uploadedPhotoUrl) URL.revokeObjectURL(uploadedPhotoUrl);
+      uploadedPhotoUrl = URL.createObjectURL(file);
+      uploadName.textContent = `Previewing: ${file.name}`;
+      useSamplePhoto.hidden = false;
+      updatePreview();
+    });
+
+    useSamplePhoto.addEventListener("click", () => {
+      if (uploadedPhotoUrl) URL.revokeObjectURL(uploadedPhotoUrl);
+      uploadedPhotoUrl = null;
+      photoUpload.value = "";
+      uploadName.textContent = "";
+      useSamplePhoto.hidden = true;
+      updatePreview();
+    });
+
+    function updatePreview() {
+      const room = document.querySelector(".option.selected").textContent.trim();
+      const style = document.querySelector(".style-option.selected").textContent.trim();
+      const selectedColor = document.querySelector(".swatch.selected").dataset.color;
+      previewStyle.textContent = style + " " + room.toLowerCase();
+      previewImage.style.setProperty("--room-photo", `url("${uploadedPhotoUrl || roomImages[room]}")`);
+      previewImage.style.setProperty("--style-filter", styleFilters[style]);
+      previewImage.style.setProperty("--accent-color", selectedColor);
+    }
+
+    document.querySelector("#createButton").addEventListener("click", () => {
+      updatePreview();
+      message.textContent = "Your room concept is ready.";
+    });
+
+    document.querySelector("#saveButton").addEventListener("click", () => {
+      message.textContent = "Your room concept has been saved.";
+    });
+  </script>
+</body>
+</html>
